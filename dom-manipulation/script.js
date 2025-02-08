@@ -21,6 +21,8 @@ function createAddQuoteForm() {
         <input type="text" id="quoteCategory" placeholder="Enter category" required />
         <button type="submit">Add Quote</button>
       </form>
+      <button id="exportJson">Export Quotes</button>
+      <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
     `;
     document.body.appendChild(formContainer);
 
@@ -30,10 +32,40 @@ function createAddQuoteForm() {
         const category = document.getElementById("quoteCategory").value;
         if (text && category) {
             quotes.push({ text, category });
+            saveQuotes();
             alert("Quote added successfully!");
             event.target.reset();
         }
     });
+
+    document.getElementById("exportJson").addEventListener("click", exportToJsonFile);
+}
+
+function exportToJsonFile() {
+    const jsonData = JSON.stringify(quotes, null, 2);
+    const blob = new Blob([jsonData], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "quotes.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+function importFromJsonFile(event) {
+    const fileReader = new FileReader();
+    fileReader.onload = function (event) {
+        const importedQuotes = JSON.parse(event.target.result);
+        quotes.push(...importedQuotes);
+        saveQuotes();
+        alert('Quotes imported successfully!');
+    };
+    fileReader.readAsText(event.target.files[0]);
+}
+
+function saveQuotes() {
+    localStorage.setItem("quotes", JSON.stringify(quotes));
 }
 
 // Initialize
