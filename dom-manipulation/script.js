@@ -4,6 +4,19 @@ const quotes = [
     { text: "Life is 10% what happens to us and 90% how we react to it.", category: "Wisdom" }
 ];
 
+async function fetchQuotesFromServer() {
+    try {
+        const response = await fetch("https://jsonplaceholder.typicode.com/posts?_limit=5");
+        const data = await response.json();
+        const newQuotes = data.map(post => ({ text: post.title, category: "General" }));
+        quotes.push(...newQuotes);
+        saveQuotes();
+        populateCategories();
+    } catch (error) {
+        console.error("Error fetching quotes:", error);
+    }
+}
+
 function showRandomQuote() {
     const filteredQuotes = getFilteredQuotes();
     if (filteredQuotes.length === 0) {
@@ -106,6 +119,9 @@ function filterQuotes() {
     showRandomQuote();
 }
 
+setInterval(fetchQuotesFromServer, 60000);
+
 // Initialize
+fetchQuotesFromServer();
 showRandomQuote();
 createAddQuoteForm();
