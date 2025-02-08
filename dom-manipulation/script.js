@@ -25,7 +25,7 @@ function createAddQuoteForm() {
         <input type="text" id="quoteCategory" placeholder="Enter category" required />
         <button type="submit">Add Quote</button>
       </form>
-      <button id="exportJson">Export Quotes</button>
+      
       <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
       <label for="categoryFilter">Filter by Category:</label>
       <select id="categoryFilter" onchange="filterQuotes()">

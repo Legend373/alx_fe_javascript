@@ -10,20 +10,15 @@
     <div id="quoteDisplay"></div>
     <button id="newQuote">Show New Quote</button>
 
-    <label for="importFile">Import file:</label>
+    <label for="importFile">Import :</label>
+    <button type="button" id="exportJson">Export Quotes</button>
     <input
       type="file"
       id="importFile"
       accept=".json"
       onchange="importFromJsonFile(event)"
     />
-    <label for="exportFile">Export file:</label>
-    <input
-      type="file"
-      id="exportFile"
-      accept=".json"
-      onchange="exportToJsonFile(event)"
-    />
+
     <script src="script.js"></script>
   </body>
 </html>
