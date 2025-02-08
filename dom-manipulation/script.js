@@ -5,9 +5,13 @@ const quotes = [
 ];
 
 function showRandomQuote() {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    const quoteDisplay = document.getElementById("quoteDisplay");
-    quoteDisplay.innerHTML = `<p><strong>${quotes[randomIndex].category}:</strong> "${quotes[randomIndex].text}"</p>`;
+    const filteredQuotes = getFilteredQuotes();
+    if (filteredQuotes.length === 0) {
+        document.getElementById("quoteDisplay").innerHTML = "<p>No quotes available for this category.</p>";
+        return;
+    }
+    const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+    document.getElementById("quoteDisplay").innerHTML = `<p><strong>${filteredQuotes[randomIndex].category}:</strong> "${filteredQuotes[randomIndex].text}"</p>`;
 }
 
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
@@ -23,6 +27,10 @@ function createAddQuoteForm() {
       </form>
       <button id="exportJson">Export Quotes</button>
       <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
+      <label for="categoryFilter">Filter by Category:</label>
+      <select id="categoryFilter" onchange="filterQuotes()">
+        <option value="all">All Categories</option>
+      </select>
     `;
     document.body.appendChild(formContainer);
 
@@ -33,12 +41,14 @@ function createAddQuoteForm() {
         if (text && category) {
             quotes.push({ text, category });
             saveQuotes();
+            populateCategories();
             alert("Quote added successfully!");
             event.target.reset();
         }
     });
 
     document.getElementById("exportJson").addEventListener("click", exportToJsonFile);
+    populateCategories();
 }
 
 function exportToJsonFile() {
@@ -59,6 +69,7 @@ function importFromJsonFile(event) {
         const importedQuotes = JSON.parse(event.target.result);
         quotes.push(...importedQuotes);
         saveQuotes();
+        populateCategories();
         alert('Quotes imported successfully!');
     };
     fileReader.readAsText(event.target.files[0]);
@@ -66,6 +77,33 @@ function importFromJsonFile(event) {
 
 function saveQuotes() {
     localStorage.setItem("quotes", JSON.stringify(quotes));
+    localStorage.setItem("selectedCategory", document.getElementById("categoryFilter").value);
+}
+
+function populateCategories() {
+    const categoryFilter = document.getElementById("categoryFilter");
+    categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+    const categories = [...new Set(quotes.map(q => q.category))];
+    categories.forEach(category => {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        categoryFilter.appendChild(option);
+    });
+    const savedCategory = localStorage.getItem("selectedCategory");
+    if (savedCategory) {
+        categoryFilter.value = savedCategory;
+    }
+}
+
+function getFilteredQuotes() {
+    const selectedCategory = document.getElementById("categoryFilter").value;
+    return selectedCategory === "all" ? quotes : quotes.filter(q => q.category === selectedCategory);
+}
+
+function filterQuotes() {
+    saveQuotes();
+    showRandomQuote();
 }
 
 // Initialize
