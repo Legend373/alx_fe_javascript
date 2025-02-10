@@ -31,14 +31,19 @@ async function postQuoteToServer(text, category) {
 
 function syncQuotes(newQuotes) {
     let updated = false;
+    const storedQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
+
     newQuotes.forEach(newQuote => {
-        if (!quotes.some(q => q.text === newQuote.text)) {
-            quotes.push(newQuote);
+        if (!storedQuotes.some(q => q.text === newQuote.text)) {
+            storedQuotes.push(newQuote);
             updated = true;
         }
     });
+
     if (updated) {
-        saveQuotes();
+        localStorage.setItem("quotes", JSON.stringify(storedQuotes));
+        quotes.length = 0;
+        quotes.push(...storedQuotes);
         populateCategories();
         showNotification("New quotes have been added from the server.");
     }
