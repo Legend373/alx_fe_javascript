@@ -46,6 +46,7 @@ function syncQuotes(newQuotes) {
         quotes.push(...storedQuotes);
         populateCategories();
         showNotification("New quotes have been added from the server.");
+        alert("Quotes synced with server!");
     }
 }
 
